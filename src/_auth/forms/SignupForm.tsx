@@ -7,6 +7,7 @@ import { SignupValidation } from '@/lib/validation';
 import { z } from 'zod';
 import FormElement from '@/components/shared/FormElement';
 import Loader from '@/components/shared/Loader';
+import { createUserAccount } from '@/lib/appwrite/api';
 
 export interface SignUpFormValuesType {
   name: string;
@@ -31,8 +32,9 @@ const SignupForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
-    // const newUser = await createUserAccount(values);
-    console.log(values);
+    const newUser = await createUserAccount(values);
+
+    console.log(newUser);
   }
 
   return (
