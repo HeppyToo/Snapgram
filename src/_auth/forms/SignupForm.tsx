@@ -1,5 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
+
+import { useToast } from '@/components/ui/use-toast';
+
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
@@ -24,7 +27,9 @@ const initialValues: SignUpFormValuesType = {
 };
 
 const SignupForm = () => {
+  const { toast } = useToast();
   const isLoading = false;
+  const date = new Date();
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -34,7 +39,14 @@ const SignupForm = () => {
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
 
-    console.log(newUser);
+    if (!newUser) {
+      return toast({
+        title: 'Sign up failed. Please try again.',
+        description: date.toLocaleString(),
+      });
+    }
+
+    // const session = await singInAccount();
   }
 
   return (
