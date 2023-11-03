@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useToast } from '@/components/ui/use-toast';
 
@@ -10,7 +10,11 @@ import { SignupValidation } from '@/lib/validation';
 import { z } from 'zod';
 import FormElement from '@/components/shared/FormElement';
 import Loader from '@/components/shared/Loader';
-import { createUserAccount } from '@/lib/appwrite/api';
+import {
+  useCreateUserAccount,
+  useSignInAccount,
+} from '@/lib/react-query/queriesAndMutations';
+import { useUserContext } from '@/context/AuthContext';
 
 export interface SignUpFormValuesType {
   name: string;
@@ -28,8 +32,15 @@ const initialValues: SignUpFormValuesType = {
 
 const SignupForm = () => {
   const { toast } = useToast();
-  const isLoading = false;
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigete = useNavigate();
+
   const date = new Date();
+
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
+    useCreateUserAccount();
+  const { mutateAsync: singInAccount, isPending: isSignIn } =
+    useSignInAccount();
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -46,7 +57,30 @@ const SignupForm = () => {
       });
     }
 
-    // const session = await singInAccount();
+    const session = await singInAccount({
+      email: values.email,
+      password: values.password,
+    });
+
+    if (!session) {
+      return toast({
+        title: 'Sign up failed. Please try again.',
+        description: date.toLocaleString(),
+      });
+    }
+
+    const isLoggedIn = await checkAuthUser();
+
+    if (isLoggedIn) {
+      form.reset;
+
+      navigete('/');
+    } else {
+      return toast({
+        title: 'Sign up failed. Please try again.',
+        description: date.toLocaleString(),
+      });
+    }
   }
 
   return (
@@ -89,7 +123,7 @@ const SignupForm = () => {
             type="password"
           />
           <Button type="submit" className="shad-button_primary ">
-            {isLoading ? (
+            {isCreatingAccount ? (
               <div className="flex-center gap-2">
                 <Loader />
                 Loading...
