@@ -1,18 +1,17 @@
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useForm } from 'react-hook-form';
-import { useToast } from '@/components/ui/use-toast';
-import { useUserContext } from '@/context/AuthContext';
-import { useSignInAccount } from '@/lib/react-query/queriesAndMutations';
-
-import { SigninValidation } from '@/lib/validation';
-import { z } from 'zod';
-
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
 import FormElement from '@/components/shared/FormElement';
 import Loader from '@/components/shared/Loader';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
+import { useToast } from '@/components/ui/use-toast';
+
+import { SigninValidation } from '@/lib/validation';
+import { useSignInAccount } from '@/lib/react-query/queries';
+import { useUserContext } from '@/context/AuthContext';
 
 export interface SignInFormValuesType {
   email: string;
@@ -27,28 +26,30 @@ const initialValues: SignInFormValuesType = {
 const SigninForm = () => {
   const { toast } = useToast();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
-  const navigete = useNavigate();
+  const navigate = useNavigate();
 
   const date = new Date();
 
-  const { mutateAsync: singInAccount } = useSignInAccount();
-
+  // FormVerification
   const form = useForm<z.infer<typeof SigninValidation>>({
     resolver: zodResolver(SigninValidation),
     defaultValues: initialValues,
   });
 
-  async function onSubmit(values: z.infer<typeof SigninValidation>) {
-    const session = await singInAccount({
-      email: values.email,
-      password: values.password,
-    });
+  // Query
+  const { mutateAsync: singInAccount, isPending } = useSignInAccount();
+
+  //Handle
+  const handleSignin = async (user: z.infer<typeof SigninValidation>) => {
+    const session = await singInAccount(user);
 
     if (!session) {
-      return toast({
+      toast({
         title: 'Sign in failed. Please try again.',
         description: date.toLocaleString(),
       });
+
+      return;
     }
 
     const isLoggedIn = await checkAuthUser();
@@ -56,14 +57,16 @@ const SigninForm = () => {
     if (isLoggedIn) {
       form.reset;
 
-      navigete('/');
+      navigate('/');
     } else {
-      return toast({
+      toast({
         title: 'Sign in failed. Please try again.',
         description: date.toLocaleString(),
       });
+
+      return;
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -77,7 +80,7 @@ const SigninForm = () => {
           Welcome back! Please enter your details
         </p>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleSignin)}
           className="flex flex-col gap-5 w-full mt-4"
         >
           <FormElement
@@ -93,7 +96,7 @@ const SigninForm = () => {
             type="password"
           />
           <Button type="submit" className="shad-button_primary ">
-            {isUserLoading ? (
+            {isPending || isUserLoading ? (
               <div className="flex-center gap-2">
                 <Loader />
                 Loading...

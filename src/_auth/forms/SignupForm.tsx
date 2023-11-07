@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import {
   useCreateUserAccount,
   useSignInAccount,
-} from '@/lib/react-query/queriesAndMutations';
+} from '@/lib/react-query/queries';
 import { useUserContext } from '@/context/AuthContext';
 import { SignupValidation } from '@/lib/validation';
 

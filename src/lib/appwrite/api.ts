@@ -25,8 +25,8 @@ export async function createUserAccount(user: INewUser) {
       accountId: newAccount.$id,
       name: newAccount.name,
       email: newAccount.email,
-      imageUrl: avatarUrl,
       username: user.username,
+      imageUrl: avatarUrl,
     });
 
     return newUser;
@@ -59,11 +59,22 @@ export async function saveUserToDB(user: {
 }
 
 // ============================== SIGN IN
-export async function singInAccount(user: { email: string; password: string }) {
+export async function signInAccount(user: { email: string; password: string }) {
   try {
-    const session = account.createEmailSession(user.email, user.password);
+    const session = await account.createEmailSession(user.email, user.password);
 
     return session;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== GET ACCOUNT
+export async function getAccount() {
+  try {
+    const currentAccount = await account.get();
+
+    return currentAccount;
   } catch (error) {
     console.log(error);
   }
@@ -72,7 +83,7 @@ export async function singInAccount(user: { email: string; password: string }) {
 // ============================== GET USER
 export async function getCurrentUser() {
   try {
-    const currentAccount = await account.get();
+    const currentAccount = await getAccount();
 
     if (!currentAccount) {
       throw Error;
@@ -89,6 +100,18 @@ export async function getCurrentUser() {
     }
 
     return currentUser.documents[0];
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+// ============================== SIGN OUT
+export async function signOutAccount() {
+  try {
+    const session = await account.deleteSession('current');
+
+    return session;
   } catch (error) {
     console.log(error);
   }
