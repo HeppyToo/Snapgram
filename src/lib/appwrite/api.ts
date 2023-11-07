@@ -1,8 +1,13 @@
 import { ID, Query } from 'appwrite';
 
-import { INewUser } from '@/types';
 import { account, appwriteConfig, avatars, databases } from './confige';
+import { INewUser } from '@/types';
 
+// ============================================================
+// AUTH
+// ============================================================
+
+// ============================== SIGN UP
 export async function createUserAccount(user: INewUser) {
   try {
     const newAccount = await account.create(
@@ -31,6 +36,7 @@ export async function createUserAccount(user: INewUser) {
   }
 }
 
+// ============================== SAVE USER TO DB
 export async function saveUserToDB(user: {
   accountId: string;
   email: string;
@@ -52,6 +58,7 @@ export async function saveUserToDB(user: {
   }
 }
 
+// ============================== SIGN IN
 export async function singInAccount(user: { email: string; password: string }) {
   try {
     const session = account.createEmailSession(user.email, user.password);
@@ -62,6 +69,7 @@ export async function singInAccount(user: { email: string; password: string }) {
   }
 }
 
+// ============================== GET USER
 export async function getCurrentUser() {
   try {
     const currentAccount = await account.get();

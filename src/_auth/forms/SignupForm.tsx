@@ -33,7 +33,7 @@ const initialValues: SignUpFormValuesType = {
 const SignupForm = () => {
   const { toast } = useToast();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
-  const navigete = useNavigate();
+  const navigate = useNavigate();
   const date = new Date();
 
   // FormVerification
@@ -53,10 +53,12 @@ const SignupForm = () => {
     const newUser = await createUserAccount(values);
 
     if (!newUser) {
-      return toast({
+      toast({
         title: 'Sign up failed. Please try again.',
         description: date.toLocaleString(),
       });
+
+      return;
     }
 
     const session = await singInAccount({
@@ -65,10 +67,14 @@ const SignupForm = () => {
     });
 
     if (!session) {
-      return toast({
-        title: 'Sign up failed. Please try again.',
+      toast({
+        title: 'Something went wrong. Please login your new account',
         description: date.toLocaleString(),
       });
+
+      navigate('/sign-in');
+
+      return;
     }
 
     const isLoggedIn = await checkAuthUser();
@@ -76,7 +82,7 @@ const SignupForm = () => {
     if (isLoggedIn) {
       form.reset;
 
-      navigete('/');
+      navigate('/');
     } else {
       return toast({
         title: 'Sign up failed. Please try again.',
