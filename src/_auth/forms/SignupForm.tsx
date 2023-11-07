@@ -1,20 +1,20 @@
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useToast } from '@/components/ui/use-toast';
-
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { SignupValidation } from '@/lib/validation';
-import { z } from 'zod';
 import FormElement from '@/components/shared/FormElement';
 import Loader from '@/components/shared/Loader';
+import { Form } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+
 import {
   useCreateUserAccount,
   useSignInAccount,
 } from '@/lib/react-query/queriesAndMutations';
 import { useUserContext } from '@/context/AuthContext';
+import { SignupValidation } from '@/lib/validation';
 
 export interface SignUpFormValuesType {
   name: string;
@@ -34,20 +34,22 @@ const SignupForm = () => {
   const { toast } = useToast();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
   const navigete = useNavigate();
-
   const date = new Date();
 
-  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
-    useCreateUserAccount();
-  const { mutateAsync: singInAccount, isPending: isSignIn } =
-    useSignInAccount();
-
+  // FormVerification
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
     defaultValues: initialValues,
   });
 
-  async function onSubmit(values: z.infer<typeof SignupValidation>) {
+  // Queries
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
+    useCreateUserAccount();
+  const { mutateAsync: singInAccount, isPending: isSigningInUser } =
+    useSignInAccount();
+
+  // Handler
+  const handleSignup = async (values: z.infer<typeof SignupValidation>) => {
     const newUser = await createUserAccount(values);
 
     if (!newUser) {
@@ -81,7 +83,7 @@ const SignupForm = () => {
         description: date.toLocaleString(),
       });
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -95,7 +97,7 @@ const SignupForm = () => {
           To use Snapgram, please enter your details
         </p>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleSignup)}
           className="flex flex-col gap-5 w-full mt-4"
         >
           <FormElement
@@ -123,7 +125,7 @@ const SignupForm = () => {
             type="password"
           />
           <Button type="submit" className="shad-button_primary ">
-            {isCreatingAccount ? (
+            {isCreatingAccount || isSigningInUser || isUserLoading ? (
               <div className="flex-center gap-2">
                 <Loader />
                 Loading...

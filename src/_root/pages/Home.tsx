@@ -1,7 +1,15 @@
-import React from 'react'
+import LeftSidebar from '@/components/shared/LeftSidebar';
+import Topbar from '@/components/shared/Topbar';
 
 const Home = () => {
-    return <div>Home</div>
-}
+  return (
+    <div className="w-full md:flex">
+      <Topbar />
+      <LeftSidebar />
 
-export default Home
+      <section className="flex flex-1 h-full"></section>
+    </div>
+  );
+};
+
+export default Home;
