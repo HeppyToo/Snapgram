@@ -3,11 +3,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 
-import FormElement from '@/components/shared/FormElement';
-import Loader from '@/components/shared/Loader';
 import { Form } from '@/components/ui/form';
+import { Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { FormElement } from '@/components/shared';
 
 import {
   useCreateUserAccount,

@@ -3,12 +3,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 
-import FormElement from '@/components/shared/FormElement';
-import Loader from '@/components/shared/Loader';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useToast } from '@/components/ui/use-toast';
 
+import { Loader } from 'lucide-react';
+import { FormElement } from '@/components/shared';
 import { SigninValidation } from '@/lib/validation';
 import { useSignInAccount } from '@/lib/react-query/queries';
 import { useUserContext } from '@/context/AuthContext';
