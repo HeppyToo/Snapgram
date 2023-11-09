@@ -34,7 +34,6 @@ const SignupForm = () => {
   const { toast } = useToast();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
   const navigate = useNavigate();
-
   const date = new Date();
 
   // FormVerification
