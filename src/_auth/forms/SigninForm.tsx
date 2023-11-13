@@ -8,10 +8,10 @@ import { Form } from '@/components/ui/form';
 import { useToast } from '@/components/ui/use-toast';
 
 import { Loader } from 'lucide-react';
-import { FormElement } from '@/components/shared';
 import { SigninValidation } from '@/lib/validation';
 import { useSignInAccount } from '@/lib/react-query/queries';
 import { useUserContext } from '@/context/AuthContext';
+import FormElement from '@/components/forms/AuthForm';
 
 export interface SignInFormValuesType {
   email: string;

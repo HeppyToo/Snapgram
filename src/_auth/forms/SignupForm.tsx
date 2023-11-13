@@ -7,7 +7,6 @@ import { Form } from '@/components/ui/form';
 import { Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { FormElement } from '@/components/shared';
 
 import {
   useCreateUserAccount,
@@ -15,6 +14,7 @@ import {
 } from '@/lib/react-query/queries';
 import { useUserContext } from '@/context/AuthContext';
 import { SignupValidation } from '@/lib/validation';
+import FormElement from '@/components/forms/AuthForm';
 
 export interface SignUpFormValuesType {
   name: string;
