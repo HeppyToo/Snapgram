@@ -1,6 +1,6 @@
 import { useToast } from '@/components/ui/use-toast';
-import { useGetUsers } from '@/lib/react-query/queries';
 import { Loader, UserCard } from '@/components/shared';
+import { useGetUsers } from '@/lib/react-query/queries';
 
 const AllUsers = () => {
   const { toast } = useToast();
@@ -14,7 +14,7 @@ const AllUsers = () => {
   }
 
   return (
-    <div className="flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar">
+    <div className="common-container">
       <div className="max-w-5xl flex flex-col items-start w-full gap-6 md:gap-9">
         <h2 className="h3-bold md:h2-bold text-left w-full">All Users</h2>
         {isLoading && !creators ? (

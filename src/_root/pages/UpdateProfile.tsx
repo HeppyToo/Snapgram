@@ -1,43 +1,38 @@
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import {
-  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
-  Textarea,
-  useToast,
-} from '@/components/ui';
-import { useUserContext } from '@/context/AuthContext';
-import { useNavigate, useParams } from 'react-router-dom';
+} from '@/components/ui/form';
+import { useToast } from '@/components/ui/use-toast';
+import { Textarea, Input, Button } from '@/components/ui';
+import { ProfileUploader, Loader } from '@/components/shared';
+
 import { ProfileValidation } from '@/lib/validation';
+import { useUserContext } from '@/context/AuthContext';
 import { useGetUserById, useUpdateUser } from '@/lib/react-query/queries';
-import { Loader } from 'lucide-react';
-import { ProfileUploader } from '@/components/shared';
 
 const UpdateProfile = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const { user, setUser } = useUserContext();
-
-  const initialValues = {
-    file: [],
-    name: user.name,
-    username: user.username,
-    email: user.email,
-    bio: user.bio || '',
-  };
-
   const form = useForm<z.infer<typeof ProfileValidation>>({
     resolver: zodResolver(ProfileValidation),
-    defaultValues: initialValues,
+    defaultValues: {
+      file: [],
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      bio: user.bio || '',
+    },
   });
 
   // Queries
@@ -77,9 +72,10 @@ const UpdateProfile = () => {
     });
     return navigate(`/profile/${id}`);
   };
+
   return (
     <div className="flex flex-1">
-      <div className="flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar">
+      <div className="common-container">
         <div className="flex-start gap-3 justify-start w-full max-w-5xl">
           <img
             src="/assets/icons/edit.svg"

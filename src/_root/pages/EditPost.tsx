@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 
-import PostForm from '@/components/forms/PostForm';
 import { Loader } from '@/components/shared';
+import PostForm from '@/components/forms/PostForm';
 import { useGetPostById } from '@/lib/react-query/queries';
 
 const EditPost = () => {
@@ -17,7 +17,7 @@ const EditPost = () => {
 
   return (
     <div className="flex flex-1">
-      <div className="flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar">
+      <div className="common-container">
         <div className="flex-start gap-3 justify-start w-full max-w-5xl">
           <img
             src="/assets/icons/edit.svg"

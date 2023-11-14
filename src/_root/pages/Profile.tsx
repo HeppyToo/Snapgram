@@ -1,15 +1,16 @@
-import { GridPostList, LikedPosts, Loader } from '@/components/shared';
+import {
+  Route,
+  Routes,
+  Link,
+  Outlet,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
+
 import { Button } from '@/components/ui';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetUserById } from '@/lib/react-query/queries';
-import {
-  Link,
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useParams,
-} from 'react-router-dom';
+import { GridPostList, LikedPosts, Loader } from '@/components/shared';
 
 interface StabBlockProps {
   value: string | number;
@@ -101,7 +102,7 @@ const Profile = () => {
         <div className="flex max-w-5xl w-full">
           <Link
             to={`/profile/${id}`}
-            className={`flex-center gap-3 py-4 w-48 bg-dark-2  transition flex-1 xl:flex-initial rounded-l-lg ${
+            className={`profile-tab rounded-l-lg ${
               pathname === `/profile/${id}` && '!bg-dark-3'
             }`}
           >
@@ -115,7 +116,7 @@ const Profile = () => {
           </Link>
           <Link
             to={`/profile/${id}/liked-posts`}
-            className={`flex-center gap-3 py-4 w-48 bg-dark-2  transition flex-1 xl:flex-initial rounded-l-lg ${
+            className={`profile-tab rounded-r-lg ${
               pathname === `/profile/${id}/liked-posts` && '!bg-dark-3'
             }`}
           >

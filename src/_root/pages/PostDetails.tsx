@@ -5,8 +5,8 @@ import { Loader } from '@/components/shared';
 import { GridPostList, PostStats } from '@/components/shared';
 
 import {
-  useGetPostById,
   useGetUserPosts,
+  useGetPostById,
   useDeletePost,
 } from '@/lib/react-query/queries';
 import { multiFormatDateString } from '@/lib/utils';
