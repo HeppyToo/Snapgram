@@ -59,7 +59,8 @@ export const useSignOutAccount = () => {
 export const useGetPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: getInfinitePosts as any,
+    queryFn: getInfinitePosts,
+    initialPageParam: null,
     getNextPageParam: (lastPage: any) => {
       // If there's no data, there are no more pages.
       if (lastPage && lastPage.documents.length === 0) {
@@ -68,9 +69,9 @@ export const useGetPosts = () => {
 
       // Use the $id of the last document as the cursor.
       const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+
       return lastId;
     },
-    initialPageParam: 1,
   });
 };
 
