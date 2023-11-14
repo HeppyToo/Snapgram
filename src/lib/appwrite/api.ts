@@ -2,7 +2,7 @@
 import { ID, Query } from 'appwrite';
 
 import { appwriteConfig, account, databases, storage, avatars } from './config';
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types';
+import { IUpdatePost, INewPost, INewUser, IUpdateUser } from '@/types';
 
 // ============================================================
 // AUTH
@@ -86,9 +86,7 @@ export async function getCurrentUser() {
   try {
     const currentAccount = await getAccount();
 
-    if (!currentAccount) {
-      throw Error;
-    }
+    if (!currentAccount) throw Error;
 
     const currentUser = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -96,9 +94,7 @@ export async function getCurrentUser() {
       [Query.equal('accountId', currentAccount.$id)]
     );
 
-    if (!currentUser) {
-      throw Error;
-    }
+    if (!currentUser) throw Error;
 
     return currentUser.documents[0];
   } catch (error) {
@@ -128,22 +124,19 @@ export async function createPost(post: INewPost) {
     // Upload file to appwrite storage
     const uploadedFile = await uploadFile(post.file[0]);
 
-    if (!uploadedFile) {
-      throw Error;
-    }
+    if (!uploadedFile) throw Error;
 
     // Get file url
-    const fileUrl = await getFilePreview(uploadedFile.$id);
-
+    const fileUrl = getFilePreview(uploadedFile.$id);
     if (!fileUrl) {
-      deleteFile(uploadedFile.$id);
+      await deleteFile(uploadedFile.$id);
       throw Error;
     }
 
-    // Convert tags in an array
+    // Convert tags into array
     const tags = post.tags?.replace(/ /g, '').split(',') || [];
 
-    // Save post to database
+    // Create post
     const newPost = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
@@ -196,6 +189,8 @@ export function getFilePreview(fileId: string) {
       100
     );
 
+    if (!fileUrl) throw Error;
+
     return fileUrl;
   } catch (error) {
     console.log(error);
@@ -205,7 +200,7 @@ export function getFilePreview(fileId: string) {
 // ============================== DELETE FILE
 export async function deleteFile(fileId: string) {
   try {
-    await storage.deleteFile(appwriteConfig.databaseId.storageId, fileId);
+    await storage.deleteFile(appwriteConfig.storageId, fileId);
 
     return { status: 'ok' };
   } catch (error) {
@@ -218,7 +213,30 @@ export async function searchPosts(searchTerm: string) {
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId[Query.search('caption', searchTerm)]
+      appwriteConfig.postCollectionId,
+      [Query.search('caption', searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(9)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      queries
     );
 
     if (!posts) throw Error;
@@ -250,7 +268,7 @@ export async function getPostById(postId?: string) {
 
 // ============================== UPDATE POST
 export async function updatePost(post: IUpdatePost) {
-  const hasFileToUpdate = post.file.length;
+  const hasFileToUpdate = post.file.length > 0;
 
   try {
     let image = {
@@ -312,20 +330,120 @@ export async function updatePost(post: IUpdatePost) {
   }
 }
 
+// ============================== DELETE POST
+export async function deletePost(postId?: string, imageId?: string) {
+  if (!postId || !imageId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteFile(imageId);
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== LIKE / UNLIKE POST
+export async function likePost(postId: string, likesArray: string[]) {
+  try {
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId,
+      {
+        likes: likesArray,
+      }
+    );
+
+    if (!updatedPost) throw Error;
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== SAVE POST
+export async function savePost(userId: string, postId: string) {
+  try {
+    const updatedPost = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      ID.unique(),
+      {
+        user: userId,
+        post: postId,
+      }
+    );
+
+    if (!updatedPost) throw Error;
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+// ============================== DELETE SAVED POST
+export async function deleteSavedPost(savedRecordId: string) {
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      savedRecordId
+    );
+
+    if (!statusCode) throw Error;
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== GET USER'S POST
+export async function getUserPosts(userId?: string) {
+  if (!userId) return;
+
+  try {
+    const post = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      [Query.equal('creator', userId), Query.orderDesc('$createdAt')]
+    );
+
+    if (!post) throw Error;
+
+    return post;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // ============================== GET POPULAR POSTS (BY HIGHEST LIKE COUNT)
 export async function getRecentPosts() {
-  const posts = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.postCollectionId,
-    [Query.orderDesc('$createdAt'), Query.limit(20)]
-  );
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      [Query.orderDesc('$createdAt'), Query.limit(20)]
+    );
 
-  if (!posts) {
-    throw Error;
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
   }
-
-  return posts;
 }
+
 // ============================================================
 // USER
 // ============================================================
