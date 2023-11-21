@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { Models } from 'appwrite';
 
 import { Loader, PostCard, UserCard } from '@/components/shared';
 import { useGetRecentPosts, useGetUsers } from '@/lib/react-query/queries';
+import SocialStory from '@/components/shared/SocialStory';
+import StoryForm from '@/components/forms/StoryForm';
 
 const Home = () => {
+  const [open, setOpen] = useState(false);
   const {
     data: posts,
     isLoading: isPostLoading,
@@ -30,9 +34,9 @@ const Home = () => {
 
   return (
     <div className="flex flex-1">
-      <div className="home-container">
+      <div className="flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar">
         <div className="home-posts">
-          <h2 className="h3-bold md:h2-bold text-left w-full">Home Feed</h2>
+          <SocialStory open={open} setModalOpen={setOpen} />
           {isPostLoading && !posts ? (
             <Loader />
           ) : (
@@ -61,6 +65,7 @@ const Home = () => {
           </ul>
         )}
       </div>
+      {open && <StoryForm open={open} setModalOpen={setOpen} />}
     </div>
   );
 };

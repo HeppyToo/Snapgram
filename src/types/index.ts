@@ -46,3 +46,9 @@ export type INewUser = {
   username: string;
   password: string;
 };
+
+export type INewStory = {
+  userId: string;
+  file: File[];
+  tags?: string;
+};

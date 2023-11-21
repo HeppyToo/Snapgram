@@ -2,7 +2,13 @@
 import { ID, Query } from 'appwrite';
 
 import { appwriteConfig, account, databases, storage, avatars } from './config';
-import { IUpdatePost, INewPost, INewUser, IUpdateUser } from '@/types';
+import {
+  IUpdatePost,
+  INewPost,
+  INewUser,
+  IUpdateUser,
+  INewStory,
+} from '@/types';
 
 // ============================================================
 // AUTH
@@ -541,6 +547,69 @@ export async function updateUser(user: IUpdateUser) {
     }
 
     return updatedUser;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================================================
+// STORY
+// ============================================================
+export async function createStory(story: INewStory) {
+  try {
+    // Upload file to appwrite storage
+    const uploadedFile = await uploadFile(story.file[0]);
+
+    if (!uploadedFile) throw Error;
+
+    // Get file url
+    const fileUrl = getFilePreview(uploadedFile.$id);
+
+    if (!fileUrl) {
+      await deleteFile(uploadedFile.$id);
+      throw Error;
+    }
+
+    // Convert tags into array
+    const tags = story.tags?.replace(/ /g, '').split(',') || [];
+
+    // Create post
+    const newStory = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.storyCollectionId,
+      ID.unique(),
+      {
+        revised: true,
+        creator: story.userId,
+        imgUrl: fileUrl,
+        imgId: uploadedFile.$id,
+        tags: tags,
+      }
+    );
+
+    if (!newStory) {
+      await deleteFile(uploadedFile.$id);
+      throw Error;
+    }
+
+    return newStory;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== GET POPULAR POSTS (BY HIGHEST LIKE COUNT)
+export async function getRecentStory() {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.storyCollectionId,
+      [Query.orderDesc('$createdAt'), Query.limit(20)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
   } catch (error) {
     console.log(error);
   }

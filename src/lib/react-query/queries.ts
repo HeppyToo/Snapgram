@@ -26,8 +26,15 @@ import {
   searchPosts,
   savePost,
   deleteSavedPost,
+  createStory,
 } from '@/lib/appwrite/api';
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types';
+import {
+  INewPost,
+  INewStory,
+  INewUser,
+  IUpdatePost,
+  IUpdateUser,
+} from '@/types';
 
 // ============================================================
 // AUTH QUERIES
@@ -245,5 +252,28 @@ export const useUpdateUser = () => {
         queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
       });
     },
+  });
+};
+
+// ============================================================
+// STORY QUERIES
+// ============================================================
+
+export const useCreateStory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (story: INewStory) => createStory(story),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_STORY],
+      });
+    },
+  });
+};
+
+export const useGetRecentStory = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_RECENT_STORY],
+    queryFn: getRecentPosts,
   });
 };

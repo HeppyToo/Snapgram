@@ -52,3 +52,11 @@ export const PostValidation = z.object({
     .max(1000, { message: 'Maximum 1000 characters.' }),
   tags: z.string(),
 });
+
+// ============================================================
+// STORY
+// ============================================================
+export const StoryValidation = z.object({
+  file: z.custom<File[]>(),
+  tags: z.string(),
+});

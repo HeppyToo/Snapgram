@@ -6,12 +6,13 @@ import { convertFileToUrl } from '@/lib/utils';
 
 type FileUploaderProps = {
   fieldChange: (files: File[]) => void;
-  mediaUrl: string;
+  mediaUrl?: string;
+  height: string;
 };
 
-const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
+const FileUploader = ({ fieldChange, mediaUrl, height }: FileUploaderProps) => {
   const [file, setFile] = useState<File[]>([]);
-  const [fileUrl, setFileUrl] = useState<string>(mediaUrl);
+  const [fileUrl, setFileUrl] = useState<string>(mediaUrl!);
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
@@ -44,7 +45,7 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
           <p className="file_uploader-label">Click or drag photo to replace</p>
         </>
       ) : (
-        <div className="file_uploader-box ">
+        <div className={`flex-center flex-col p-7 h-80 lg:${height}`}>
           <img
             src="/assets/icons/file-upload.svg"
             width={96}
