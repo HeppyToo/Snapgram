@@ -25,9 +25,6 @@ const Home = () => {
         <div className="flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar">
           <p className="body-medium text-light-1">Something bad happened</p>
         </div>
-        <div className="hidden xl:flex flex-col w-72 2xl:w-465 px-6 py-10 gap-10  overflow-scroll custom-scrollbar">
-          <p className="body-medium text-light-1">Something bad happened</p>
-        </div>
       </div>
     );
   }

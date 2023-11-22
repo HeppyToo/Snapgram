@@ -27,6 +27,7 @@ import {
   savePost,
   deleteSavedPost,
   createStory,
+  getRecentStory,
 } from '@/lib/appwrite/api';
 import {
   INewPost,
@@ -274,6 +275,6 @@ export const useCreateStory = () => {
 export const useGetRecentStory = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_STORY],
-    queryFn: getRecentPosts,
+    queryFn: getRecentStory,
   });
 };

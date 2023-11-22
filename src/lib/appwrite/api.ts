@@ -579,11 +579,11 @@ export async function createStory(story: INewStory) {
       appwriteConfig.storyCollectionId,
       ID.unique(),
       {
-        revised: true,
         creator: story.userId,
         imgUrl: fileUrl,
         imgId: uploadedFile.$id,
         tags: tags,
+        revised: true,
       }
     );
 
@@ -598,13 +598,13 @@ export async function createStory(story: INewStory) {
   }
 }
 
-// ============================== GET POPULAR POSTS (BY HIGHEST LIKE COUNT)
+// ============================== GET STORY
 export async function getRecentStory() {
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.storyCollectionId,
-      [Query.orderDesc('$createdAt'), Query.limit(20)]
+      [Query.orderDesc('$createdAt')]
     );
 
     if (!posts) throw Error;

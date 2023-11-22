@@ -9,3 +9,7 @@ export { default as FileUploader } from './FileUploader';
 export { default as ProfileUploader } from './ProfileUploader';
 export { default as PostStats } from './PostStats';
 export { default as LikedPosts } from './LikedPosts';
+export { default as CarouselStory } from './CarouselStory';
+export { default as StoryButton } from './StoryButton';
+export { default as StoryModal } from './StoryModal';
+export { default as SocialStory } from './SocialStory';
