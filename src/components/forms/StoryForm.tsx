@@ -66,7 +66,7 @@ const StoryForm: React.FC<IModalProps> = ({ setModalOpen }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="bg-dark-3 w-[450px] flex flex-col justify-between gap-5 my-10 overflow-auto custom-scrollbar "
+          className="bg-dark-3 w-[450px] flex flex-col justify-between gap-5 my-10 overflow-auto custom-scrollbar p-5"
           onClick={(e) => e.stopPropagation()}
         >
           <FormField
