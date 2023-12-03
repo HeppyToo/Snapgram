@@ -33,7 +33,7 @@ const StoryButton = () => {
             {history?.documents.map((story: Models.Document) => (
               <li
                 key={story.$id}
-                className="flex justify-center w-full cursor-pointer"
+                className="flex flex-col justify-center w-full cursor-pointer"
                 onClick={() => setOpen(true)}
               >
                 <img
@@ -48,6 +48,7 @@ const StoryButton = () => {
                       : 'border-2 border-solid	border-gray-500 rounded-br-full'
                   }`}
                 />
+                <p className="flex justify-center">{story.creator.name}</p>
               </li>
             ))}
           </ul>
